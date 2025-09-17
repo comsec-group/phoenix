@@ -1,0 +1,158 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Fri Feb 24 09:44:07 2023
+[*]
+[dumpfile] "/home/mczyz/workspace/rowhammer-tester/third_party/litedram/test/wave_ut/test_ddr5_rdimm_init.vcd"
+[dumpfile_mtime] "Fri Feb 24 09:43:25 2023"
+[dumpfile_size] 407378
+[savefile] "/home/mczyz/workspace/rowhammer-tester/third_party/litedram/test/test_ddr5_rdimm_init.gtkw"
+[timestart] 51204
+[size] 2048 1051
+[pos] -1 -1
+*-8.589433 48317 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 315
+[signals_width] 531
+[sst_expanded] 1
+[sst_vpaned_height] 393
+@800200
+-System CLK RST
+@28
+sys_clk
+sys_rst
+sys_rst_clk
+sysx2_clk
+sysx2_rst
+@1000200
+-System CLK RST
+@820
+state[151:0]
+@800200
+-RCD Input A
+@22
+if_ibuf_A_dca[6:0]
+@28
+if_ibuf_A_dcs_n[1:0]
+if_alert_n_alert_n
+if_ibuf_A_dpar
+@1000200
+-RCD Input A
+@800200
+-RCD Output A
+@22
+if_obuf_A_qaca_a[13:0]
+if_obuf_A_qaca_b[13:0]
+@28
+if_obuf_A_qacs_a_n[1:0]
+if_obuf_A_qacs_b_n[1:0]
+@22
+if_obuf_A_qbca_a[13:0]
+if_obuf_A_qbca_b[13:0]
+@28
+if_obuf_A_qbcs_a_n[1:0]
+if_obuf_A_qbcs_b_n[1:0]
+if_obuf_A_qack_c
+if_obuf_A_qack_t
+if_obuf_A_qbck_c
+if_obuf_A_qbck_t
+if_obuf_A_qcck_c
+if_obuf_A_qcck_t
+@29
+if_obuf_A_qdck_c
+@28
+if_obuf_A_qdck_t
+if_sdram_A_qrst_n
+if_ctrl_dcstm_agent_select_dcs_n
+if_ctrl_dcatm_agent_enable
+if_ctrl_dcstm_agent_enable
+@1000200
+-RCD Output A
+@800200
+-Regs
+@22
+registers0[7:0]
+registers1[7:0]
+registers2[7:0]
+registers3[7:0]
+registers4[7:0]
+registers5[7:0]
+registers6[7:0]
+registers7[7:0]
+registers8[7:0]
+registers9[7:0]
+@1000200
+-Regs
+@800200
+-Blockers
+@28
+if_ctrl_fwd_block_A_block
+if_ctrl_fwd_block_B_block
+@22
+if_ibuf_rx_blocker_o_dca[6:0]
+@28
+if_ibuf_rx_blocker_o_dcs_n[1:0]
+if_ibuf_rx_blocker_o_dpar
+is_blocking_future_cmds
+@1000200
+-Blockers
+@22
+reg_d[7:0]
+reg_q[7:0]
+@28
+reg_we
+@22
+if_register_addr[7:0]
+if_register_d[7:0]
+if_register_q[7:0]
+@28
+if_register_we
+if_ctrl_rx_block_block
+execute_command
+@22
+command[7:0]
+@28
+drst_pon
+drst_rw04
+assert_reset
+@800200
+-DCSTM
+@820
+state[151:0]
+@28
+xdcstm_agent_is_consecutive_grouping_en
+xdcstm_agent_sample
+dcstm_sample_o
+if_alert_n_alert_n
+xdcstm_agent_ui_counter[2:0]
+if_ibuf_A_dcs_n[1:0]
+xdcstm_agent_dcs_n_samples0
+xdcstm_agent_dcs_n_samples1
+xdcstm_agent_dcs_n_samples2
+xdcstm_agent_dcs_n_samples3
+xdcstm_agent_dcs_n_samples4
+xdcstm_agent_dcs_n_samples5
+xdcstm_agent_dcs_n_samples6
+@1000200
+-DCSTM
+@800200
+-DCATM
+@820
+state[151:0]
+@28
+if_alert_n_alert_n
+xdcatm_agent_sample
+dcatm_sample_o
+if_ctrl_dcatm_agent_enable
+if_ctrl_dcatm_agent_exit_dcatm
+if_ctrl_error_arbiter_is_dcatm_en
+@22
+xdcatm_agent_dca[6:0]
+xdcatm_agent_dca_d[6:0]
+@28
+xdcatm_agent_dcs_n
+xdcatm_agent_dcs_n_d
+xdcatm_agent_dpar
+xdcatm_agent_dpar_d
+@1000200
+-DCATM
+[pattern_trace] 1
+[pattern_trace] 0

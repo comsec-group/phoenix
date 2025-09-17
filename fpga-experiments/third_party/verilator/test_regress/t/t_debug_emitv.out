@@ -1,0 +1,346 @@
+module Vt_debug_emitv_t;
+    input logic clk;
+    input logic in;
+    typedef 
+    ???? // ENUMDTYPE 't.e_t'
+
+    ???? // ENUMITEM 'ZERO'
+    32'h0
+    ???? // ENUMITEM 'ONE'
+    32'h1int signed [31:0] struct packed 
+    {int signed [31:0]  a;}logic signed [2:0] struct 
+    {logic signed [2:0]  a;}logicunion 
+    {logic a;}struct packed 
+    {int signed [31:0]  a;}bit [31:0] const struct packed 
+    {int signed [31:0]  a;}const struct packed 
+    {int signed [31:0]  a;}[0:2]struct 
+    {logic signed [2:0]  a;}union 
+    {logic a;}int signed [31:0] int signed [31:0] [0:2]logic [15:0] logic [15:0] logic [15:0] int signed [31:0] int signed [31:0] int signed [31:0] 
+    ???? // QUEUEDTYPE
+    int signed [31:0] string
+    ???? // ASSOCARRAYDTYPE
+    int signed [31:0] 
+    ???? // DYNARRAYDTYPE
+    int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] real signedstringIData [31:0] logic signed [31:0] int signed [31:0]  e_t;
+    typedef struct packed 
+    {int signed [31:0]  a;}logic signed [2:0] struct 
+    {logic signed [2:0]  a;}logicunion 
+    {logic a;}struct packed 
+    {int signed [31:0]  a;}bit [31:0] const struct packed 
+    {int signed [31:0]  a;}const struct packed 
+    {int signed [31:0]  a;}[0:2]struct 
+    {logic signed [2:0]  a;}union 
+    {logic a;}int signed [31:0] int signed [31:0] [0:2]logic [15:0] logic [15:0] logic [15:0] int signed [31:0] int signed [31:0] int signed [31:0] 
+    ???? // QUEUEDTYPE
+    int signed [31:0] string
+    ???? // ASSOCARRAYDTYPE
+    int signed [31:0] 
+    ???? // DYNARRAYDTYPE
+    int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] real signedstringIData [31:0] logic signed [31:0] int signed [31:0]  ps_t;
+    typedef struct 
+    {logic signed [2:0]  a;}logicunion 
+    {logic a;}struct packed 
+    {int signed [31:0]  a;}bit [31:0] const struct packed 
+    {int signed [31:0]  a;}const struct packed 
+    {int signed [31:0]  a;}[0:2]struct 
+    {logic signed [2:0]  a;}union 
+    {logic a;}int signed [31:0] int signed [31:0] [0:2]logic [15:0] logic [15:0] logic [15:0] int signed [31:0] int signed [31:0] int signed [31:0] 
+    ???? // QUEUEDTYPE
+    int signed [31:0] string
+    ???? // ASSOCARRAYDTYPE
+    int signed [31:0] 
+    ???? // DYNARRAYDTYPE
+    int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] real signedstringIData [31:0] logic signed [31:0] int signed [31:0]  us_t;
+    typedef union 
+    {logic a;}struct packed 
+    {int signed [31:0]  a;}bit [31:0] const struct packed 
+    {int signed [31:0]  a;}const struct packed 
+    {int signed [31:0]  a;}[0:2]struct 
+    {logic signed [2:0]  a;}union 
+    {logic a;}int signed [31:0] int signed [31:0] [0:2]logic [15:0] logic [15:0] logic [15:0] int signed [31:0] int signed [31:0] int signed [31:0] 
+    ???? // QUEUEDTYPE
+    int signed [31:0] string
+    ???? // ASSOCARRAYDTYPE
+    int signed [31:0] 
+    ???? // DYNARRAYDTYPE
+    int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] int signed [31:0] real signedstringIData [31:0] logic signed [31:0] int signed [31:0]  union_t;
+    struct packed 
+    {int signed [31:0]  a;} ps[0:2];
+    struct 
+    {logic signed [2:0]  a;} us;
+    union 
+    {logic a;} unu;
+    int signed [31:0]  array[0:2];
+    initial begin
+        array = '{0:32'sh1, 1:32'sh2, 2:32'sh3};
+    end
+    logic [15:0]  pubflat;
+    logic [15:0]  pubflat_r;
+    logic [15:0]  pubflat_w;
+    assign pubflat_w = pubflat;
+    int signed [31:0]  fd;
+    int signed [31:0]  i;
+
+    ???? // QUEUEDTYPE
+     q;
+
+    ???? // ASSOCARRAYDTYPE
+     assoc;
+
+    ???? // DYNARRAYDTYPE
+     dyn;
+    task t;
+        $display("stmt");
+    endtask
+    function f;
+        input int signed [31:0]  v;
+        begin : label0
+            $display("stmt");
+            f = ((v == 'sh0) ? 'sh63 : ((~ v) + 'sh1));
+            disable label0;
+        end
+    endfunction
+    initial begin
+        begin : unnamedblk1
+            int signed [31:0]  other;
+            begin
+                begin : unnamedblk2
+                    int signed [31:0]  i;
+                    i = 'sh0;
+                    while ((i < 'sh3)) begin
+                        begin
+                            other = f(i);
+                            $display("stmt %~ %~", 
+                                     iother, other);
+                            t();
+                        end
+                        i = (i + 'h1);
+                    end
+                end
+            end
+            begin : named
+                $display("stmt");
+            end
+        end
+    end
+    final begin
+        begin
+            $display("stmt");
+        end
+    end
+    always @([changed] in) begin
+        begin
+            $display("stmt");
+        end
+    end
+    always @(posedge clk) begin
+        begin
+            $display("posedge clk");
+            pubflat_r <= pubflat_w;
+        end
+    end
+    always @(negedge clk) begin
+        begin
+            $display("negedge clk, pfr = %x", pubflat_r);
+        end
+    end
+    int signed [31:0]  cyc;
+    int signed [31:0]  fo;
+    int signed [31:0]  sum;
+    real signed r;
+    string str;
+    always @(posedge clk) begin
+        begin
+            cyc <= (cyc + 'sh1);
+            r <= (r + 0.01);
+            fo = cyc;
+            sub.inc(fosum);
+            sum = sub.f(sum);
+            $display("[%0t] sum = %~", $timesum, sum);
+            $display("a?= %d", ($c('sh1) ? $c('sh14)
+                                 : $c('sh1e)));
+            $c(;);
+            $display("%d", $c(0));
+            fd = $fopen(72'h2f6465762f6e756c6c);
+            ;
+            $fclose(fd);
+            fd = $fopen(72'h2f6465762f6e756c6c, 8'h72);
+            ;
+            $fgetc(fd);
+            $fflush(fd);
+            $fscanf(fd, "%d", sum);
+            ;
+            $fdisplay(32'h69203d20, "%~", sum);
+            $fwrite(fd, "hello");
+            $readmemh(fd, array);
+            $readmemh(fd, array, 'sh0);
+            $readmemh(fd, array, 'sh0, 'sh0);
+            sum = 'sh0;
+            begin : unnamedblk3
+                int signed [31:0]  i;
+                i = 'sh0;
+                begin : label0
+                    while ((i < cyc)) begin
+                        begin
+                            sum = (sum + i);
+                            if ((sum > 'sha)) begin
+                                disable label0;
+                            end
+                            else begin
+                                sum = (sum + 'sh1);
+                            end
+                        end
+                        i = (i + 'h1);
+                    end
+                end
+            end
+            if ((cyc == 'sh63)) begin
+                $finish;
+            end
+            if ((cyc == 'sh64)) begin
+                $stop;
+            end
+            case (in)
+                'sh1: begin $display("1");
+                end
+                default: begin $display("default");
+                end
+            endcase
+            priority case (in)
+                'sh1: begin $display("1");
+                end
+                default: begin $display("default");
+                end
+            endcase
+            unique case (in)
+                'sh1: begin $display("1");
+                end
+                default: begin $display("default");
+                end
+            endcase
+            unique0 case (in)
+                'sh1: begin $display("1");
+                end
+                default: begin $display("default");
+                end
+            endcase
+            if (in) begin
+                $display("1");
+            end
+            else begin
+                $display("0");
+            end
+            priority if (in) begin
+                $display("1");
+            end
+            else begin
+                $display("0");
+            end
+            unique if (in) begin
+                $display("1");
+            end
+            else begin
+                $display("0");
+            end
+            unique0 if (in) begin
+                $display("1");
+            end
+            else begin
+                $display("0");
+            end
+            $display("%~%~", $past(cyc)$past(cyc, 'sh1), 
+                     $past(cyc, 'sh1));
+            str = $sformatf("cyc=%~", cyc);
+            ;
+            $display("str = %@", str);
+            $display("%% [%t] [%^] to=%o td=%d", $time
+                     $realtime$time$time, $realtime
+                     $time$time, $time$time, $time);
+            $sscanf(40'h666f6f3d35, "foo=%d", i);
+            ;
+            $printtimescale;
+            if ((i != 'sh5)) begin
+                $stop;
+            end
+            sum = 
+            ???? // RAND
+            ;
+            sum = 
+            ???? // RAND
+            'sha;
+            sum = 
+            ???? // RAND
+            ;
+            sum = 
+            ???? // RAND
+            'sha;
+            if ((PKG_PARAM != 'sh1)) begin
+                $stop;
+            end
+            sub.r = 62.0;
+            $display("%g", $log10(r));
+            $display("%g", $ln(r));
+            $display("%g", $exp(r));
+            $display("%g", $sqrt(r));
+            $display("%g", $floor(r));
+            $display("%g", $ceil(r));
+            $display("%g", $sin(r));
+            $display("%g", $cos(r));
+            $display("%g", $tan(r));
+            $display("%g", $asin(r));
+            $display("%g", $acos(r));
+            $display("%g", $atan(r));
+            $display("%g", $sinh(r));
+            $display("%g", $cosh(r));
+            $display("%g", $tanh(r));
+            $display("%g", $asinh(r));
+            $display("%g", $acosh(r));
+            $display("%g", $atanh(r));
+            force sum = 'sha;
+            begin : unnamedblk1_1
+                integer signed [31:0]  __Vrepeat0;
+                __Vrepeat0 = 'sh2;
+                while ((__Vrepeat0 > 32'h0)) begin
+                    if ((sum != 'sha)) begin
+                        $stop;
+                    end
+                    __Vrepeat0 = (__Vrepeat0 - 32'h1);
+                end
+            end
+            release sum;
+        end
+    end
+    /*verilator public_flat_rw @(posedge clk) pubflat*/
+endmodule
+package Vt_debug_emitv___024unit;
+    class Vt_debug_emitv_Cls;
+        int signed [31:0]  member;
+        member = 'sh1;
+        task method;
+        endtask
+        task new;
+        endtask
+    endclass
+endpackage
+module Vt_debug_emitv_sub;
+    task inc;
+        input int signed [31:0]  i;
+        output int signed [31:0]  o;
+        o = ({32'h1{{1'h0, i[31:1]}}} + 32'h1);
+    endtask
+    function f;
+        input int signed [31:0]  v;
+        begin : label0
+            if ((v == 'sh0)) begin
+                f = 'sh21;
+                disable label0;
+            end
+            f = ({32'h1{{31'h0, v[2]}}} + 32'h1);
+            disable label0;
+        end
+    endfunction
+    real signed r;
+endmodule
+package Vt_debug_emitv_Pkg;
+    logic signed [31:0]  PKG_PARAM;
+endpackage

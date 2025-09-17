@@ -1,0 +1,54 @@
+*.swp
+__pycache__/
+*.egg-info/
+
+/build/
+/venv/
+/prog/
+
+csr.csv
+analyzer.csv
+dump.vcd
+sdram_init.py
+vivado.*
+riscv64-unknown-elf-gcc*
+docs/build
+docs/source/build/**
+
+# CMake build artifacts
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+CMakeOutput.log
+CMakeError.log
+CMakeRuleHashes.txt
+
+# Generated build files
+Makefile
+build.ninja
+*.make
+*.cmake
+*.log
+
+# Local build directories
+build/
+out/
+
+# Build logs and manifests
+build_log.txt
+install_manifest.txt
+
+# Generated pkgconfig
+*.pc
+
+# Bitstreams and archives
+*.bit
+*.bit.gz
+*.rbf
+*.rbf.gz
+*.zip
+
+# IntelliJ / IDEA project files
+.idea/
+*.iml

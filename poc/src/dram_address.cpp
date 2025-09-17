@@ -1,0 +1,402 @@
+#include <hammer/dram_address.hpp>
+
+#include <array>
+#include <bit>
+#include <cassert>
+#include <cmath>
+#include <iostream>
+#include <unordered_set>
+#include <vector>
+
+#define MATRIX_SIZE 30
+#define MATRIX_MASK ((1ULL << MATRIX_SIZE) - 1)
+#define BIT_SET(x) (1ULL << (x))
+#define GB(x) (((unsigned long)x) << 30ULL)
+#define MB(x) (((unsigned long)x) << 20ULL)
+
+using matrix_t = std::array<size_t, MATRIX_SIZE>;
+
+
+static allocation* s_alloc;
+static struct {
+    size_t phys_linear_offset{};
+
+    size_t subchannel_shift{};
+    size_t subchannel_mask{};
+    size_t rank_shift{};
+    size_t rank_mask{};
+    size_t bank_group_shift{};
+    size_t bank_group_mask{};
+    size_t bank_shift{};
+    size_t bank_mask{};
+    size_t row_shift{};
+    size_t row_mask{};
+    size_t column_shift{};
+    size_t column_mask{};
+
+    matrix_t linear_to_dram_matrix{};
+    matrix_t dram_to_linear_matrix{};
+} s_config;
+
+int parity(unsigned long long x) {
+    return __builtin_popcountll(x) % 2;
+}
+
+static size_t apply_matrix(matrix_t const& matrix, size_t addr) {
+    size_t result = 0;
+    for(size_t i = 0; i < MATRIX_SIZE; i++) {
+        auto bit = parity(matrix[i] & addr);
+        if(bit) {
+            result |= BIT_SET(i);
+        }
+    }
+    return result;
+}
+
+static matrix_t compute_inverse(matrix_t input) {
+    // Set result to the identity matrix.
+    matrix_t result{};
+    for(size_t i = 0; i < MATRIX_SIZE; i++) {
+        result[i] = BIT_SET(i);
+    }
+
+    // STEP 1: Gauss elimination.
+    for(size_t i = 0; i < MATRIX_SIZE; i++) {
+        size_t pivot = -1;
+        for(size_t j = i; j < MATRIX_SIZE; j++) {
+            if(input[j] & BIT_SET(i)) {
+                pivot = j;
+                break;
+            }
+        }
+
+        if(pivot == (size_t)-1) {
+            printf("Could not compute matrix inverse as input matrix is "
+                   "singular.\n");
+            exit(EXIT_FAILURE);
+        }
+
+        // Swap rows to get pivot into i-th row.
+        std::swap(input[i], input[pivot]);
+        std::swap(result[i], result[pivot]);
+
+        // Now, input[i] has bit i set. Unset the bit in all functions below using XOR.
+        for(size_t j = i + 1; j < MATRIX_SIZE; j++) {
+            if(input[j] & BIT_SET(i)) {
+                input[j] ^= input[i];
+                result[j] ^= result[i];
+            }
+        }
+    }
+    // Now, input is upper triangular.
+
+    // STEP 2: Unset all bits not on the diagonal, starting from the bottom.
+    for(ssize_t i = MATRIX_SIZE - 1; i >= 0; i--) {
+        for(ssize_t j = 0; j < i; j++) {
+            if(input[j] & BIT_SET(i)) {
+                input[j] ^= input[i];
+                result[j] ^= result[i];
+            }
+        }
+    }
+
+    // Check that input is now the identity matrix.
+    for(size_t i = 0; i < MATRIX_SIZE; i++) {
+        assert(input[i] == BIT_SET(i));
+    }
+
+    return result;
+}
+
+static auto initialize_config(int dimm_size_gib, int dimm_ranks) {
+    size_t phys_linear_offset = 0;
+    std::vector<size_t> subchannel_funcs;
+    std::vector<size_t> rank_funcs;
+    std::vector<size_t> bank_group_funcs;
+    std::vector<size_t> bank_funcs;
+    size_t row_mask    = 0;
+    size_t column_mask = 0;
+    printf("[+] Initializing config for AMD Zen 4, %d rank(s).\n", dimm_ranks);
+
+    if(dimm_ranks == 1) {                        // NOLINT
+        bool use_16_gib = (dimm_size_gib >= 12); // nearer 16 GiB than 8 GiB?
+        if(use_16_gib) { /* 8 bankgroups, 16 GiB DIMM size */
+            phys_linear_offset = MB(2048);
+            subchannel_funcs.push_back(0x3fffc0040);
+            bank_group_funcs.push_back(0x042100100);
+            bank_group_funcs.push_back(0x084200200);
+            bank_group_funcs.push_back(0x108401000);
+            bank_funcs.push_back(0x210840400);
+            bank_funcs.push_back(0x021080800);
+            row_mask    = 0x3fffc0000;
+            column_mask = 0x00003e0bf;
+        } else { /* 4 bankgroups, 8 GiB DIMM size */
+            phys_linear_offset = MB(2048);
+            subchannel_funcs.push_back(0x3ffe0040);
+            bank_group_funcs.push_back(0x08880100);
+            bank_group_funcs.push_back(0x11100200);
+            bank_funcs.push_back(0x22220400);
+            bank_funcs.push_back(0x4440800);
+            row_mask    = 0x3ffe0000;
+            column_mask = 0x0001f0bf;
+        }
+    } else if(dimm_ranks == 2) { // NOLINT
+        phys_linear_offset = MB(2048);
+        rank_funcs.push_back(0x40000);
+        subchannel_funcs.push_back(0x7fff80040);
+        bank_group_funcs.push_back(0x84200100);
+        bank_group_funcs.push_back(0x108400200);
+        bank_group_funcs.push_back(0x210801000);
+        bank_funcs.push_back(0x421080400);
+        bank_funcs.push_back(0x42100800);
+        row_mask    = 0x07fff80000;
+        column_mask = 0x00003e0bf;
+    } else {
+        exit(EXIT_FAILURE);
+    }
+
+    // STEP 1: Check that the offset is divisible by the mapping covered by the matrix, ensuring the MSBs stay the same.
+    assert(phys_linear_offset % (1ULL << MATRIX_SIZE) == 0);
+    s_config.phys_linear_offset = phys_linear_offset;
+
+    // STEP 2: Mask all functions to the 30 bits we have available.
+    constexpr size_t MASK = BIT_SET(MATRIX_SIZE) - 1;
+    for(auto& func : subchannel_funcs) {
+        func &= MASK;
+    }
+    for(auto& func : rank_funcs) {
+        func &= MASK;
+    }
+    for(auto& func : bank_group_funcs) {
+        func &= MASK;
+    }
+    for(auto& func : bank_funcs) {
+        func &= MASK;
+    }
+    row_mask &= MASK;
+    column_mask &= MASK;
+
+    // STEP 3: Check we have the correct number of functions.
+    auto row_bits    = __builtin_popcountll(row_mask);
+    auto column_bits = __builtin_popcountll(column_mask);
+    auto total_bits  = subchannel_funcs.size() + rank_funcs.size() +
+        bank_group_funcs.size() + bank_funcs.size() + row_bits + column_bits;
+    if(total_bits != MATRIX_SIZE) {
+        printf("Configuration yields %zu address functions, not %d (as "
+               "required).",
+               total_bits, MATRIX_SIZE);
+        exit(EXIT_FAILURE);
+    }
+
+    // STEP 4: Assemble the masks as required by the config struct.
+    size_t bits_used                = 0;
+    auto create_mask_with_bit_count = [&bits_used](size_t bit_count) {
+        auto mask = (1ULL << bit_count) - 1;
+        bits_used += bit_count;
+        return mask;
+    };
+
+    s_config.column_shift     = bits_used;
+    s_config.column_mask      = create_mask_with_bit_count(column_bits);
+    s_config.row_shift        = bits_used;
+    s_config.row_mask         = create_mask_with_bit_count(row_bits);
+    s_config.bank_shift       = bits_used;
+    s_config.bank_mask        = create_mask_with_bit_count(bank_funcs.size());
+    s_config.bank_group_shift = bits_used;
+    s_config.bank_group_mask = create_mask_with_bit_count(bank_group_funcs.size());
+    s_config.rank_shift      = bits_used;
+    s_config.rank_mask       = create_mask_with_bit_count(rank_funcs.size());
+    s_config.subchannel_shift = bits_used;
+    s_config.subchannel_mask = create_mask_with_bit_count(subchannel_funcs.size());
+
+    // Sanity check.
+    assert(bits_used == MATRIX_SIZE);
+
+    // STEP 5: Create linear_to_dram_matrix.
+    size_t i = 0;
+    for(size_t bit = 0; bit < MATRIX_SIZE; bit++) {
+        if(BIT_SET(bit) & column_mask) {
+            s_config.linear_to_dram_matrix[i++] = BIT_SET(bit);
+        }
+    }
+    for(size_t bit = 0; bit < MATRIX_SIZE; bit++) {
+        if(BIT_SET(bit) & row_mask) {
+            s_config.linear_to_dram_matrix[i++] = BIT_SET(bit);
+        }
+    }
+    for(auto func : bank_funcs) {
+        s_config.linear_to_dram_matrix[i++] = func;
+    }
+    for(auto func : bank_group_funcs) {
+        s_config.linear_to_dram_matrix[i++] = func;
+    }
+    for(auto func : rank_funcs) {
+        s_config.linear_to_dram_matrix[i++] = func;
+    }
+    for(auto func : subchannel_funcs) {
+        s_config.linear_to_dram_matrix[i++] = func;
+    }
+    // Sanity check.
+    assert(i == MATRIX_SIZE);
+
+    // STEP 6: Make dram_to_linear_matrix the inverse of linear_to_dram_matrix.
+    s_config.dram_to_linear_matrix = compute_inverse(s_config.linear_to_dram_matrix);
+
+    printf("[+] Finished DRAM configuration.\n");
+}
+
+void dram_address::initialize(allocation alloc, int dimm_size_gib, int dimm_ranks) {
+    assert(!s_alloc);
+    assert(alloc.size() == GB(1) && "Need a mapping of exactly one 1 GB superpage.");
+    s_alloc = new allocation(std::move(alloc));
+    initialize_config(dimm_size_gib, dimm_ranks);
+}
+
+allocation& dram_address::alloc() {
+    assert(s_alloc && "[-] Class dram_address is not initialized.");
+    return *s_alloc;
+}
+
+dram_address dram_address::from_virt(const volatile char* virt) {
+    assert(s_alloc);
+    auto intermediate =
+        apply_matrix(s_config.linear_to_dram_matrix, (size_t)virt & MATRIX_MASK);
+
+    auto subchannel = (intermediate >> s_config.subchannel_shift) & s_config.subchannel_mask;
+    auto rank = (intermediate >> s_config.rank_shift) & s_config.rank_mask;
+    auto bank_group = (intermediate >> s_config.bank_group_shift) & s_config.bank_group_mask;
+    auto bank   = (intermediate >> s_config.bank_shift) & s_config.bank_mask;
+    auto row    = (intermediate >> s_config.row_shift) & s_config.row_mask;
+    auto column = (intermediate >> s_config.column_shift) & s_config.column_mask;
+
+    return { subchannel, rank, bank_group, bank, row, column };
+}
+
+volatile char* dram_address::to_virt() const {
+    assert(s_alloc && "[-] Class dram_address is not initialized.");
+
+    size_t intermediate = 0;
+    intermediate |= (m_subchannel & s_config.subchannel_mask) << s_config.subchannel_shift;
+    intermediate |= (m_rank & s_config.rank_mask) << s_config.rank_shift;
+    intermediate |= (m_bank_group & s_config.bank_group_mask) << s_config.bank_group_shift;
+    intermediate |= (m_bank & s_config.bank_mask) << s_config.bank_shift;
+    intermediate |= (m_row & s_config.row_mask) << s_config.row_shift;
+    intermediate |= (m_column & s_config.column_mask) << s_config.column_shift;
+
+    auto linear = apply_matrix(s_config.dram_to_linear_matrix, intermediate);
+    assert(((size_t)s_alloc->ptr() & MATRIX_MASK) == 0 &&
+           "[-] Allocation is not aligned to 2^30 bytes.");
+
+    auto addr = (uint64_t)s_alloc->ptr() + linear;
+    if(addr > (uint64_t)s_alloc->ptr() + s_alloc->size()) {
+        std::cerr << "[-] Address out of bounds: " << std::hex << addr << " > "
+                  << (uint64_t)s_alloc->ptr() + s_alloc->size() << std::dec << "\n";
+        assert(false);
+    }
+
+    return (volatile char*)addr;
+}
+
+size_t dram_address::subchannel() const {
+    return m_subchannel & s_config.subchannel_mask;
+}
+
+size_t dram_address::rank() const {
+    return m_rank & s_config.rank_mask;
+}
+
+size_t dram_address::bank_group() const {
+    return m_bank_group & s_config.bank_group_mask;
+}
+
+size_t dram_address::bank() const {
+    return m_bank & s_config.bank_mask;
+}
+
+size_t dram_address::row() const {
+    return m_row & s_config.row_mask;
+}
+
+size_t dram_address::column() const {
+    return m_column & s_config.column_mask;
+}
+
+std::string dram_address::to_string() const {
+    return "(" + std::to_string(subchannel()) + "," + std::to_string(rank()) +
+        "," + std::to_string(bank_group()) + "," + std::to_string(bank()) +
+        "," + std::to_string(row()) + "," + std::to_string(column()) + ")";
+}
+
+void dram_address::add_inplace(size_t subchannels,
+                               size_t ranks,
+                               size_t bank_groups,
+                               size_t banks,
+                               size_t rows,
+                               size_t columns) {
+    m_subchannel += subchannels;
+    m_rank += ranks;
+    m_bank_group += bank_groups;
+    m_bank += banks;
+    m_row += rows;
+    m_column += columns;
+}
+
+dram_address dram_address::add(size_t subchannels,
+                               size_t ranks,
+                               size_t bank_groups,
+                               size_t banks,
+                               size_t rows,
+                               size_t columns) {
+    auto tmp = *this;
+    tmp.add_inplace(subchannels, ranks, bank_groups, banks, rows, columns);
+    return tmp;
+}
+
+
+std::vector<dram_address> dram_address::get_whole_row() const {
+    const std::size_t num_colbits = std::popcount(s_config.column_mask);
+    const std::size_t max_col_idx = 1ULL << num_colbits;
+
+    std::vector<dram_address> addresses;
+    addresses.reserve(max_col_idx);
+
+    std::size_t sc  = this->subchannel();
+    std::size_t rk  = this->rank();
+    std::size_t bg  = this->bank_group();
+    std::size_t bk  = this->bank();
+    std::size_t row = this->row();
+
+    for(size_t col_idx = 0; col_idx < max_col_idx; col_idx++) {
+        auto da = dram_address(sc, rk, bg, bk, row, col_idx);
+        addresses.push_back(da);
+    }
+    return addresses;
+}
+
+std::vector<volatile char*> dram_address::get_vaddrs_whole_row() const {
+    size_t num_colbits = __builtin_popcountll(s_config.column_mask);
+    auto current_addr  = this->to_virt();
+    dram_address da    = from_virt(current_addr);
+
+    auto max_col_idx = static_cast<size_t>(std::floor(pow(2, (double)num_colbits)));
+    std::vector<volatile char*> vaddrs;
+    vaddrs.reserve(max_col_idx);
+
+    // Track duplicates as we generate; throw (or assert) if something is wrong.
+    std::unordered_set<volatile char*> seen;
+    seen.reserve(max_col_idx);
+
+    for(size_t col_idx = 0; col_idx < max_col_idx; col_idx++) {
+        da.m_column = col_idx;
+        auto addr   = da.to_virt();
+
+        const bool inserted = seen.insert(addr).second;
+        if(!inserted) {
+            throw std::logic_error("dram_address::get_vaddrs_whole_row(): "
+                                   "duplicate column->vaddr mapping");
+        }
+
+        vaddrs.push_back(addr);
+    }
+    return vaddrs;
+}

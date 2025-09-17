@@ -1,0 +1,10 @@
+build/
+CMakeCache.txt
+CMakeFiles/
+.idea/
+cmake-build-debug/
+.vscode/
+/scripts/_deps/
+venv/
+results/
+phoenix.zip

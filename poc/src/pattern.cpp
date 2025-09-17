@@ -1,0 +1,319 @@
+#include <hammer/dram_address.hpp>
+#include <hammer/pattern.hpp>
+
+#include <stdexcept>
+#include <vector>
+
+inline std::vector<dram_address> address_unique(std::vector<dram_address> flat) {
+    std::vector<dram_address> unique;
+
+    auto cmp = [](const dram_address& a, const dram_address& b) noexcept {
+        return std::tuple(a.subchannel(), a.rank(), a.bank_group(), a.bank(),
+                          a.row(), a.column()) <
+            std::tuple(b.subchannel(), b.rank(), b.bank_group(), b.bank(),
+                       b.row(), b.column());
+    };
+
+    std::sort(flat.begin(), flat.end(), cmp);
+
+    for(const auto& addr : flat) {
+        if(unique.empty() || !(addr == unique.back())) {
+            unique.push_back(addr);
+        }
+    }
+
+    return unique;
+}
+
+
+std::vector<dram_address>
+address_flatten(const std::vector<std::vector<dram_address>>& pat) {
+    std::vector<dram_address> flat;
+
+    for(const auto& burst : pat) {
+        flat.insert(flat.end(), burst.begin(), burst.end());
+    }
+
+    return flat;
+}
+
+
+std::vector<dram_address> create_row_pair_addresses_colstride(size_t subchannel,
+                                                              size_t rank,
+                                                              size_t bank_group,
+                                                              size_t bank,
+                                                              size_t base_row,
+                                                              size_t num_pairs,
+                                                              size_t column_stride) {
+    std::vector<size_t> colstrides;
+
+    for(size_t i = 0; i < num_pairs; i++) {
+        uint64_t col = (i * column_stride) % 4096;
+        colstrides.push_back(col);
+    }
+
+    std::vector<dram_address> addresses;
+    addresses.reserve(num_pairs * 2);
+    size_t cur_stride = 0;
+    for(size_t i = 0; i < num_pairs; i++) {
+        auto da1 = dram_address(subchannel, rank, bank_group, bank, base_row,
+                                colstrides[cur_stride]);
+        auto da2 = dram_address(subchannel, rank, bank_group, bank,
+                                base_row + 2, colstrides[cur_stride]);
+        addresses.push_back(da1);
+        addresses.push_back(da2);
+        cur_stride++;
+    }
+
+    return addresses;
+}
+
+std::vector<dram_address> make_victim_addrs(const std::vector<dram_address>& aggressors) {
+    std::vector<dram_address> victims;
+    victims.reserve(aggressors.size()); // two per aggressor
+
+    for(const auto& aggressor : aggressors) {
+        std::size_t sc  = aggressor.subchannel();
+        std::size_t rk  = aggressor.rank();
+        std::size_t bg  = aggressor.bank_group();
+        std::size_t bk  = aggressor.bank();
+        std::size_t col = aggressor.column();
+        std::size_t row = aggressor.row();
+
+        if(row > 0) {
+            victims.emplace_back(sc, rk, bg, bk, row - 1, col);
+        }
+        victims.emplace_back(sc, rk, bg, bk, row + 1, col);
+    }
+
+    return victims;
+}
+
+std::vector<dram_address> pattern_aggressors(const hammer_pattern_t& pat) {
+    return address_unique(address_flatten(pat));
+}
+
+std::vector<dram_address> pattern_victims(const hammer_pattern_t& pat) {
+    return address_unique(make_victim_addrs(pattern_aggressors(pat)));
+}
+
+hammer_pattern_t assemble_skh_mod128_pattern(int subchannel,
+                                             int rank,
+                                             int bank_group,
+                                             int bank,
+                                             int row_base_offset,
+                                             int reads_per_trefi,
+                                             int column_stride,
+                                             int offset_increment) {
+    constexpr int num_pools = 4; // 4 aggressor pairs
+    const int num_pairs     = reads_per_trefi / 2;
+
+    using burst_array = std::array<trefi_burst_t, num_pools>;
+    burst_array template_bursts;
+
+    for(int pool_idx = 0; pool_idx < num_pools; ++pool_idx) {
+        int base_row = row_base_offset + pool_idx * offset_increment;
+
+        auto dram_addresses =
+            create_row_pair_addresses_colstride(subchannel, rank, bank_group, bank,
+                                                base_row, num_pairs, column_stride);
+
+        template_bursts[pool_idx] = std::move(dram_addresses);
+    }
+
+    hammer_pattern_t pat;
+
+    auto copy_burst = [&](int pool) { pat.push_back(template_bursts[pool]); };
+
+    // Pool index shortcuts
+    constexpr int P0 = 0; // addresses[0/1]
+    constexpr int P1 = 1; // addresses[2/3]
+    constexpr int P2 = 2; // addresses[4/5]
+    constexpr int P3 = 3; // addresses[6/7]
+
+    /* ----------------------- first half ------------------------------- */
+    for(int k = 0; k < 16; k++) {
+        for(int i = 0; i < 2; ++i) {
+            copy_burst(P0);
+        }
+        for(int i = 0; i < 2; ++i) {
+            copy_burst(P1);
+        }
+    }
+
+    /* ----------------------- second half ------------------------------- */
+    for(int k = 0; k < 16; k++) {
+        for(int i = 0; i < 2; ++i) {
+            copy_burst(P2);
+        }
+        for(int i = 0; i < 2; ++i) {
+            copy_burst(P3);
+        }
+    }
+
+    return pat;
+}
+
+hammer_pattern_t assemble_skh_mod2608_pattern(int subchannel,
+                                              int rank,
+                                              int bank_group,
+                                              int bank,
+                                              int row_base_offset,
+                                              int reads_per_trefi,
+                                              int column_stride,
+                                              int offset_increment) {
+    constexpr int num_pools = 5; // 4 aggressor pairs + 1 decoy pair
+    const int num_pairs     = reads_per_trefi / 2;
+
+    using burst_array = std::array<trefi_burst_t, num_pools>;
+    burst_array template_bursts;
+
+    for(int pool_idx = 0; pool_idx < num_pools; ++pool_idx) {
+        int base_row = row_base_offset + pool_idx * offset_increment;
+
+        auto dram_addresses =
+            create_row_pair_addresses_colstride(subchannel, rank, bank_group, bank,
+                                                base_row, num_pairs, column_stride);
+
+        template_bursts[pool_idx] = std::move(dram_addresses);
+    }
+
+    hammer_pattern_t pat;
+
+    auto copy_burst = [&](int pool) { pat.push_back(template_bursts[pool]); };
+
+    // Pool index shortcuts
+    constexpr int P0  = 0; // addresses[0/1]
+    constexpr int P1  = 1; // addresses[2/3]
+    constexpr int P2  = 2; // addresses[4/5]
+    constexpr int P3  = 3; // addresses[6/7]
+    constexpr int DEC = 4; // decoy (row±1)
+
+    /* ----------------------- first half ------------------------------- */
+    for(int k = 0; k < 8; ++k) {
+        for(int kk = 0; kk < 5; ++kk) {
+            for(int i = 0; i < 2; ++i)
+                copy_burst(DEC);
+            for(int i = 0; i < 3; ++i)
+                copy_burst(P0);
+            for(int i = 0; i < 3; ++i)
+                copy_burst(P1);
+            for(int i = 0; i < 3; ++i)
+                copy_burst(P2);
+            for(int i = 0; i < 3; ++i)
+                copy_burst(P3);
+            for(int i = 0; i < 18; ++i)
+                copy_burst(DEC);
+        }
+        copy_burst(DEC); // “shift by one”
+    }
+    for(int i = 0; i < 16; ++i)
+        copy_burst(DEC);
+
+    /* ----------------------- second half ------------------------------ */
+    for(int k = 0; k < 8; ++k) {
+        for(int kk = 0; kk < 5; ++kk) {
+            for(int i = 0; i < 18; ++i)
+                copy_burst(DEC);
+            for(int i = 0; i < 3; ++i)
+                copy_burst(P0);
+            for(int i = 0; i < 3; ++i)
+                copy_burst(P1);
+            for(int i = 0; i < 3; ++i)
+                copy_burst(P2);
+            for(int i = 0; i < 3; ++i)
+                copy_burst(P3);
+            for(int i = 0; i < 2; ++i)
+                copy_burst(DEC);
+        }
+        copy_burst(DEC); // “shift by one”
+    }
+    for(int i = 0; i < 16; ++i)
+        copy_burst(DEC);
+
+    return pat;
+}
+
+hammer_pattern_t
+merge_patterns(const hammer_pattern_t& a, const hammer_pattern_t& b, std::size_t stride_a) {
+    if(stride_a == 0) {
+        throw std::invalid_argument("stride_a must be > 0");
+    }
+
+    if(a.size() != b.size()) {
+        throw std::invalid_argument("patterns have different burst counts");
+    }
+
+    hammer_pattern_t out;
+    out.reserve(a.size());
+
+    for(std::size_t burst = 0; burst < a.size(); ++burst) {
+        const auto& burst_a = a[burst];
+        const auto& burst_b = b[burst];
+
+        trefi_burst_t merged;
+        merged.reserve(burst_a.size() + burst_b.size());
+
+        std::size_t ia = 0, ib = 0;
+
+        while(ia < burst_a.size() || ib < burst_b.size()) {
+            /*––– stride from A –––*/
+            for(std::size_t k = 0; k < stride_a && ia < burst_a.size(); ++k) {
+                merged.push_back(burst_a[ia++]);
+            }
+
+            /*––– single from B –––*/
+            if(ib < burst_b.size())
+                merged.push_back(burst_b[ib++]);
+        }
+
+        out.emplace_back(std::move(merged));
+    }
+    return out;
+}
+
+
+hammer_pattern_t assemble_multi_bank_pattern(bank_pattern_builder_t builder,
+                                             const std::vector<int>& subchannels,
+                                             const std::vector<int>& ranks,
+                                             const std::vector<int>& bank_groups,
+                                             const std::vector<int>& banks,
+                                             int row_base_offset,
+                                             int reads_per_trefi,
+                                             int column_stride,
+                                             std::size_t burst_rotation,
+                                             int offset_increment) {
+    if(subchannels.empty() || ranks.empty() || bank_groups.empty() || banks.empty()) {
+        throw std::invalid_argument("selector lists must not be empty");
+    }
+
+    hammer_pattern_t result;
+    bool first = true;
+
+    int stride = 0;
+
+    for(int sc : subchannels) {
+        for(int rk : ranks) {
+            for(int bg : bank_groups) {
+                for(int bk : banks) {
+                    hammer_pattern_t pat =
+                        builder(sc, rk, bg, bk, row_base_offset, reads_per_trefi,
+                                column_stride, offset_increment);
+
+                    pat = rotate_pattern_right(pat, burst_rotation);
+
+                    if(first) {
+                        result = std::move(pat);
+                        first  = false;
+                    } else {
+                        result = merge_patterns(result, pat, stride);
+                    }
+
+                    stride++;
+                }
+            }
+        }
+    }
+
+    return result;
+}

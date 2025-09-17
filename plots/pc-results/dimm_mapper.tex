@@ -1,0 +1,65 @@
+\RequirePackage{xstring}
+\RequirePackage{xspace}
+\RequirePackage{xparse}
+
+% UDIMMs
+\newcommand{\dimmMicron}[1]{\ensuremath{\mathrm M_{\fontsize{9}{4}\selectfont#1}}\xspace}
+\newcommand{\dimmSamsung}[1]{\ensuremath{\mathrm S_{\fontsize{9}{4}\selectfont#1}}\xspace}
+\newcommand{\dimmSkhynix}[1]{\ensuremath{\mathrm H_{\fontsize{9}{4}\selectfont#1}}\xspace}
+\newcommand{\dimmUnknown}[1]{\ensuremath{\mathrm U_{\fontsize{9}{4}\selectfont#1}}\xspace}
+
+% RDIMMs
+\newcommand{\dimmMicronR}[1]{\ensuremath{\mathsf M_{\fontsize{9}{4}\selectfont#1}}\xspace}
+\newcommand{\dimmSamsungR}[1]{\ensuremath{\mathsf S_{\fontsize{9}{4}\selectfont#1}}\xspace}
+\newcommand{\dimmSkhynixR}[1]{\ensuremath{\mathsf H_{\fontsize{9}{4}\selectfont#1}}\xspace}
+
+\newcommand{\dimm}[1]{%
+   \IfEqCase{#1}{%
+      % RDIMMS =========================================
+      % {334}{\dimmSamsungR{0}}
+      % {333}{\dimmSamsungR{1}}
+      % {315}{\dimmSamsungR{2}}
+      % {322}{\dimmSamsungR{3}}
+      % {301}{\dimmMicronR{0}}
+      % {311}{\dimmMicronR{1}}
+      % {331}{\dimmMicronR{2}}
+      % {323}{\dimmMicronR{3}}
+      % {327}{\dimmMicronR{4}}
+      % {319}{\dimmMicronR{5}}
+      % {329}{\dimmMicronR{6}}
+      {313}{\dimmSkhynixR{0}}
+      {314}{\dimmSkhynixR{1}}
+      {304}{\dimmSkhynixR{2}}
+      {312}{\dimmSkhynixR{3}}
+      {310}{\dimmSkhynixR{4}}
+      {325}{\dimmSkhynixR{5}}
+      {324}{\dimmSkhynixR{6}}
+      {320}{\dimmSkhynixR{7}}
+      {318}{\dimmSkhynixR{8}}
+      {317}{\dimmSkhynixR{9}}
+      % UDIMMS =========================================
+      {522}{\dimmSkhynix{0}}
+      % {502}{\dimmSkhynix{1}}
+      {518}{\dimmSkhynix{1}}
+      {525}{\dimmSkhynix{2}}
+      % {537}{\dimmSkhynix{4}}
+      {499}{\dimmSkhynix{3}}
+      {530}{\dimmSkhynix{4}}
+      {532}{\dimmSkhynix{5}}
+      {526}{\dimmSkhynix{6}}
+      {527}{\dimmSkhynix{7}}
+      {529}{\dimmSkhynix{8}}
+      {533}{\dimmSkhynix{9}}
+      % {490}{\dimmSkhynix{12}}
+      {496}{\dimmSkhynix{10}}
+      % {495}{\dimmSkhynix{14}}
+      {464}{\dimmSkhynix{11}}
+      {485}{\dimmSkhynix{12}}
+      {470}{\dimmSkhynix{13}}
+      {468}{\dimmSkhynix{14}}
+      % {456}{\dimmSkhynix{19}}
+      % {472}{\dimmSkhynix{20}}
+      % {466}{\dimmSkhynix{21}}
+      % {486}{\dimmSkhynix{22}}
+   }
+}

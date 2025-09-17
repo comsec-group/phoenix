@@ -1,0 +1,46 @@
+#
+# This file is part of LiteDRAM.
+#
+# Copyright (c) 2020 Stefan Schrijvers <ximin@ximinity.net>
+# SPDX-License-Identifier: BSD-2-Clause
+
+{
+    # General ------------------------------------------------------------------
+    "device":  "LFE5UM5G-45F-8BG381C", # FPGA device.
+    "cpu":     "vexriscv",             # CPU type (ex vexriscv, serv, None)
+    "memtype": "DDR3",                 # DRAM type
+    "uart":    "rs232",                # Type of UART interface (rs232, fifo)
+
+    # PHY ----------------------------------------------------------------------
+    "sdram_module":    "MT41K64M16",  # SDRAM modules of the board or SO-DIMM
+    "sdram_module_nb": 2,             # Number of byte groups
+    "sdram_rank_nb":   1,             # Number of ranks
+    "sdram_phy":       "ECP5DDRPHY",  # Type of FPGA PHY
+
+    # Frequency ----------------------------------------------------------------
+    "input_clk_freq":   100e6, # Input clock frequency
+    "sys_clk_freq":     50e6,  # System clock frequency (DDR_clk = 4 x sys_clk)
+    "init_clk_freq":    25e6,  # Init clock frequency
+
+    # Core ---------------------------------------------------------------------
+    "cmd_buffer_depth": 16,    # Depth of the command buffer
+
+    # User Ports ---------------------------------------------------------------
+    "user_ports": {
+        "axi_0" : {
+            "type": "axi",
+            "id_width": 32,
+        },
+        "wishbone_0" : {
+            "type": "wishbone",
+        },
+        "native_0" : {
+            "type": "native",
+        },
+        "fifo_0" : {
+            "type":  "fifo",
+            "base":  0x00000000,
+            "depth": 0x01000000,
+        },
+    },
+}

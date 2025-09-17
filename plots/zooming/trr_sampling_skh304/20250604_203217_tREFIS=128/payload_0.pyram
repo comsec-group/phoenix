@@ -1,0 +1,8 @@
+
+for i in range(128):
+    for _ in range(29):
+        act(bank=addresses[i].bank, row=addresses[i].row - 1)
+        pre()
+        act(bank=addresses[i].bank, row=addresses[i].row + 1)
+        pre()
+    ref()

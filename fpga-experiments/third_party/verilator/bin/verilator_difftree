@@ -1,0 +1,131 @@
+#!/usr/bin/env python3
+# pylint: disable=C0103,C0114,C0116,C0209
+######################################################################
+
+import argparse
+import collections
+import glob
+import os.path
+import re
+import sys
+
+
+def diff(a, b):
+
+    if not os.path.exists(a):
+        sys.exit("%Error: No old diff filename found: " + a)
+    if not os.path.exists(b):
+        sys.exit("%Error: No new diff filename found: " + b)
+
+    if os.path.isdir(a) and os.path.isdir(b):
+        diff_dir(a, b)
+    elif os.path.isfile(a) and os.path.isfile(b):
+        diff_file(a, b)
+    else:
+        sys.exit("%Error: Mix of files and dirs")
+
+
+def diff_dir(a, b):
+    # Diff all files under two directories
+    files = collections.defaultdict(lambda: {})
+
+    for fn in glob.glob(a + "/*.tree"):
+        base = re.sub(r'.*/', '', fn)
+        files[base]['a'] = fn
+    for fn in glob.glob(b + "/*.tree"):
+        base = re.sub(r'.*/', '', fn)
+        files[base]['b'] = fn
+
+    anyfile = False
+    for base in sorted(files.keys()):
+        if ('a' not in files[base]) or ('b' not in files[base]):
+            continue
+        a = files[base]['a']
+        b = files[base]['b']
+        print("=" * 70, flush=True)
+        print("= %s <-> %s" % (a, b), flush=True)
+        diff_file(a, b)
+        anyfile = True
+    if not anyfile:
+        sys.stderr.write("%Warning: No .tree files found that have similar base names\n")
+
+
+def diff_file(a, b):
+    # Compare the two tree files
+    short_a = re.sub(r'[^a-zA-Z0-9.]+', '_', a)
+    short_b = re.sub(r'[^a-zA-Z0-9.]+', '_', b)
+    tmp_a = "/tmp/%s_%s.a" % (os.getpid(), short_a)
+    tmp_b = "/tmp/%s_%s.b" % (os.getpid(), short_b)
+
+    # Version conversion deprecated, but for future...
+    # vera = version_from(a)
+    # verb = version_from(b)
+    # verCvt = ((vera < 0x3900 and verb >= 0x3900)
+    #            or (vera >= 0x3900 and verb < 0x3900))
+
+    filterf(a, tmp_a)
+    filterf(b, tmp_b)
+    os.system("diff -u " + tmp_a + " " + tmp_b)
+    os.unlink(tmp_a)
+    os.unlink(tmp_b)
+
+
+def version_from(filename):
+    # Return dump format
+    with open(filename, "r", encoding="utf8") as fh:
+        lineno = 0
+        for line in fh:
+            if lineno > 10:
+                break
+            match = re.search(r'format (0x[0-9.]+)', line)
+            if match:
+                return hex(match.group(1))
+    return 1.0
+
+
+def filterf(fn1, fn2):
+    # Remove hex numbers before diffing
+    with open(fn1, "r", encoding="utf8") as fh1:
+        with open(fn2, "w", encoding="utf8") as fh2:
+            for line in fh1:
+                if re.search(r' This=', line):
+                    continue
+                line = re.sub(r'0x[a-f0-9]+', '0x', line)
+                line = re.sub(r'<e[0-9]+\#?>', '<e>', line)
+                if not Args.no_lineno:
+                    line = re.sub(r'{[a-z]*\d+}', '{}', line)
+                fh2.write(line)
+
+
+######################################################################
+######################################################################
+
+parser = argparse.ArgumentParser(
+    allow_abbrev=False,
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    description="""Compare two Verilator debugging trees.
+
+Verilator_difftree is used for debugging Verilator tree output files.
+It performs a diff between two files, or all files common between two
+directories, ignoring irrelevant pointer differences.""",
+    epilog="""Copyright 2005-2024 by Wilson Snyder. This program is free software; you
+can redistribute it and/or modify it under the terms of either the GNU
+Lesser General Public License Version 3 or the Perl Artistic License
+Version 2.0.
+
+SPDX-License-Identifier: LGPL-3.0-only OR Artistic-2.0""")
+
+parser.add_argument('--debug', action='store_const', const=9, help='enable debug')
+parser.add_argument('--no-lineno',
+                    action='store_false',
+                    help='do not show differences in line numbering')
+parser.add_argument('filea', help='input file a to diff')
+parser.add_argument('fileb', help='input file b to diff')
+
+Args = parser.parse_args()
+diff(Args.filea, Args.fileb)
+
+######################################################################
+# Local Variables:
+# compile-command: "./verilator_difftree ../test_regress/t/t_difftree.{a,b}.tree"
+# End:

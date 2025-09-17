@@ -1,0 +1,2 @@
+graft pythondata_cpu_vexriscv_smp/verilog/
+global-exclude *.py[cod]

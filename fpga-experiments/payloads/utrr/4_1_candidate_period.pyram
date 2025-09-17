@@ -1,0 +1,14 @@
+for i in range({candidate_length}):
+    # For each candidate index i:
+    #   - The sandwiched row (addresses[i].row) is retention profiled.
+    #   - Its two neighbors (row-1 and row+1) are hammered.
+    #
+    # Why 29 iterations?
+    #   The FPGA allows at most 59 ACTs per tREFI.
+    #   Each loop issues 2 ACTs, so we cap at 29 (2*29 = 58 ≤ 59).
+    for _ in range(29):
+        act(bank=addresses[i].bank, row=addresses[i].row - 1)  # hammer above
+        pre()
+        act(bank=addresses[i].bank, row=addresses[i].row + 1)  # hammer below
+        pre()
+    ref()

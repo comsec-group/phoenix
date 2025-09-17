@@ -1,0 +1,53 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Fri Feb 24 09:46:55 2023
+[*]
+[dumpfile] "/home/mczyz/workspace/rowhammer-tester/third_party/litedram/test/wave_ut/test_decoder.vcd"
+[dumpfile_mtime] "Fri Feb 24 09:43:34 2023"
+[dumpfile_size] 18155
+[savefile] "/home/mczyz/workspace/rowhammer-tester/third_party/litedram/test/test_ddr5_rcd_decoder.gtkw"
+[timestart] 0
+[size] 2048 1051
+[pos] -3299 -406
+*-11.000000 3210 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 359
+[signals_width] 444
+[sst_expanded] 1
+[sst_vpaned_height] 300
+@800200
+-Input
+@22
+if_ibuf_A_dca[6:0]
+@28
+if_ibuf_A_dcs_n[1:0]
+if_ibuf_A_dpar
+@1000200
+-Input
+@800200
+-Output
+@22
+if_csca_o_rank_A_dca[6:0]
+@28
+if_csca_o_rank_A_dcs_n[1:0]
+if_csca_o_rank_A_dpar
+@1000200
+-Output
+@800200
+-Decoding
+@28
+del_is_1_ui_command
+is_1_ui_command
+is_cmd_active
+@29
+is_cmd_beginning
+@28
+is_cmd_destined_for_both_ranks
+is_cmd_destined_for_rank_A
+is_cmd_destined_for_rank_B
+is_cw_bit_set
+is_force_non_zero
+is_this_ui_odd
+@1000200
+-Decoding
+[pattern_trace] 1
+[pattern_trace] 0

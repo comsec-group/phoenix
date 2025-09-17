@@ -1,0 +1,6 @@
+[submodule "pythondata_cpu_vexriscv_smp/verilog/ext/VexRiscv"]
+	path = pythondata_cpu_vexriscv_smp/verilog/ext/VexRiscv
+	url = https://github.com/SpinalHDL/VexRiscv.git
+[submodule "pythondata_cpu_vexriscv_smp/verilog/ext/SpinalHDL"]
+	path = pythondata_cpu_vexriscv_smp/verilog/ext/SpinalHDL
+	url = https://github.com/SpinalHDL/SpinalHDL.git

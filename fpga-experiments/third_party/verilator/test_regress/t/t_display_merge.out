@@ -1,0 +1,29 @@
+Merge:
+This should merge
+Merge:
+This should also merge
+f
+ 1=1 a=top.t 1=1 1=1 b=top.t 1=1
+ pre
+ t=0
+ t2=0
+ post
+ t3=0
+ t4=0 t5=0                   0
+m
+ t=0 t2=0 t3=0 t4=0 t5=0
+ t=0 t2=0 t3=0 t4=0 t5=0
+mm
+
+f a=top.t b=top.t pre t=0 t2=0 post t3=0 t4=0 t5=0                   0m t=0 t2=0 t3=0 t4=0 t5=0 t=0 t2=0 t3=0 t4=0 t5=0mm
+very very very very very very very very very very very very very very very very very very very very very very
+very very very very very very very very very very very very very very very very very very very very very very
+very very very very very very very very very very very very very very very very very very very very very very
+very very very very very very very very very very very very very very very very very very very very very very
+very very very very very very very very very very very very very very very very very very very very very very
+very very very very very very very very very very very very very very very very very very very very very very
+very very very very very very very very very very very very very very very very very very very very very very
+11111 11111
+11111 11111
+
+*-* All Finished *-*

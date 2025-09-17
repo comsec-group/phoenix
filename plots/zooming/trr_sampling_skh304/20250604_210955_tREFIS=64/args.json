@@ -1,0 +1,28 @@
+{
+    "addresses_file": "retention_rows/rdimm304/addresses_1000_8000_15000_20000.json",
+    "subarrays_file": "retention_rows",
+    "num_rows": 64,
+    "min_row_distance": 10,
+    "retention_pattern": 255,
+    "pre_wait_ms": 12000,
+    "wait_ms": 22000,
+    "modulus": null,
+    "modulo": null,
+    "modulo_file": null,
+    "dram_mapping": "direct",
+    "execute_payload": true,
+    "program": [
+        "payloads/utrr/reverse_engineering/trefi_explore_64.pyram"
+    ],
+    "num_runs": 25,
+    "disable_refresh_for_all_runs": false,
+    "output_dir": "experiments/rdimm304/sampling_window",
+    "payload_only": false,
+    "check_bitflips": false,
+    "random_sample": false,
+    "use_row_groups": false,
+    "row_group_size": 5,
+    "log_file_level": "DEBUG",
+    "log_console_level": "INFO",
+    "decoy_count": 100
+}

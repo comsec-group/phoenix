@@ -1,0 +1,10 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/psf/black
+    rev: main
+    hooks:
+      - id: black
+        name: Black Formatter
+        language_version: python3
+        files: ^u_trr/  # Restrict to the u_trr directory
+

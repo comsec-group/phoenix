@@ -1,0 +1,162 @@
+[
+    {
+        "bank": 0,
+        "row": 1003,
+        "row_hex": "0x3eb"
+    },
+    {
+        "bank": 0,
+        "row": 1014,
+        "row_hex": "0x3f6"
+    },
+    {
+        "bank": 0,
+        "row": 1029,
+        "row_hex": "0x405"
+    },
+    {
+        "bank": 0,
+        "row": 1040,
+        "row_hex": "0x410"
+    },
+    {
+        "bank": 0,
+        "row": 1061,
+        "row_hex": "0x425"
+    },
+    {
+        "bank": 0,
+        "row": 1074,
+        "row_hex": "0x432"
+    },
+    {
+        "bank": 0,
+        "row": 1086,
+        "row_hex": "0x43e"
+    },
+    {
+        "bank": 0,
+        "row": 1096,
+        "row_hex": "0x448"
+    },
+    {
+        "bank": 0,
+        "row": 1107,
+        "row_hex": "0x453"
+    },
+    {
+        "bank": 0,
+        "row": 1122,
+        "row_hex": "0x462"
+    },
+    {
+        "bank": 0,
+        "row": 1141,
+        "row_hex": "0x475"
+    },
+    {
+        "bank": 0,
+        "row": 1151,
+        "row_hex": "0x47f"
+    },
+    {
+        "bank": 0,
+        "row": 1162,
+        "row_hex": "0x48a"
+    },
+    {
+        "bank": 0,
+        "row": 1172,
+        "row_hex": "0x494"
+    },
+    {
+        "bank": 0,
+        "row": 1182,
+        "row_hex": "0x49e"
+    },
+    {
+        "bank": 0,
+        "row": 1195,
+        "row_hex": "0x4ab"
+    },
+    {
+        "bank": 0,
+        "row": 1208,
+        "row_hex": "0x4b8"
+    },
+    {
+        "bank": 0,
+        "row": 1225,
+        "row_hex": "0x4c9"
+    },
+    {
+        "bank": 0,
+        "row": 1235,
+        "row_hex": "0x4d3"
+    },
+    {
+        "bank": 0,
+        "row": 1249,
+        "row_hex": "0x4e1"
+    },
+    {
+        "bank": 0,
+        "row": 1261,
+        "row_hex": "0x4ed"
+    },
+    {
+        "bank": 0,
+        "row": 1274,
+        "row_hex": "0x4fa"
+    },
+    {
+        "bank": 0,
+        "row": 1285,
+        "row_hex": "0x505"
+    },
+    {
+        "bank": 0,
+        "row": 1297,
+        "row_hex": "0x511"
+    },
+    {
+        "bank": 0,
+        "row": 1307,
+        "row_hex": "0x51b"
+    },
+    {
+        "bank": 0,
+        "row": 1326,
+        "row_hex": "0x52e"
+    },
+    {
+        "bank": 0,
+        "row": 1340,
+        "row_hex": "0x53c"
+    },
+    {
+        "bank": 0,
+        "row": 1350,
+        "row_hex": "0x546"
+    },
+    {
+        "bank": 0,
+        "row": 1365,
+        "row_hex": "0x555"
+    },
+    {
+        "bank": 0,
+        "row": 1381,
+        "row_hex": "0x565"
+    },
+    {
+        "bank": 0,
+        "row": 1395,
+        "row_hex": "0x573"
+    },
+    {
+        "bank": 0,
+        "row": 1409,
+        "row_hex": "0x581"
+    }
+]

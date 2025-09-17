@@ -1,0 +1,27 @@
+[
+    {
+        "bank": 0,
+        "row": 101,
+        "row_hex": "0x65"
+    },
+    {
+        "bank": 0,
+        "row": 105,
+        "row_hex": "0x69"
+    },
+    {
+        "bank": 0,
+        "row": 112,
+        "row_hex": "0x70"
+    },
+    {
+        "bank": 0,
+        "row": 114,
+        "row_hex": "0x72"
+    },
+    {
+        "bank": 0,
+        "row": 118,
+        "row_hex": "0x76"
+    }
+]

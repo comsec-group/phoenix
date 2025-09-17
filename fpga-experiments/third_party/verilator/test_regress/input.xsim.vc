@@ -1,0 +1,6 @@
+
+ --sourcelibext .v
+ --sourcelibdir t
+ --sourcelibdir obj_dir/
+ --include t
+ --include obj_dir/

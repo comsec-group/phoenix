@@ -1,0 +1,22 @@
+// DESCRIPTION: Verilator: Verilog Test module
+//
+// This file ONLY is placed under the Creative Commons Public Domain, for
+// any use, without warranty, 2010 by Wilson Snyder.
+// SPDX-License-Identifier: CC0-1.0
+
+`verilator_config
+
+public -module "t" @(posedge clk)
+// only signals/functions/tasks
+isolate_assignments -module "t"
+// -match not supported
+tracing_off --file "*" -match "nothing"
+// -scope not supported
+lint_off --rule UNOPTFLAT -scope "top*"
+lint_off --rule UNOPTFLAT -scope "top*" -levels 0
+lint_on --rule UNOPTFLAT -scope "top*"
+lint_on --rule UNOPTFLAT -scope "top*" -levels 0
+// bad, --module missing
+forceable -module "" -var "net_*"
+// bad, --var missing
+forceable -module "top" -var ""

@@ -1,0 +1,96 @@
+# DIMM325 (SK Hynix)
+
+for k in range(8):
+
+    for kk in range(5):
+
+        for i in range(11):
+            for _ in range(29):
+                act(bank=decoys[0].bank, row=decoys[0].row - 1)
+                pre()
+                act(bank=decoys[0].bank, row=decoys[0].row + 1)
+                pre()
+            ref()
+
+        for i in range(3):
+            for _ in range({hammer_count}):
+                for i in range(2):
+                    act(bank=addresses[i].bank, row=addresses[i].row)
+                    pre()
+
+            for _ in range({decoy_hammer_count}):
+                for i in range(2):
+                    act(bank=decoys[i].bank, row=decoys[i].row)
+                    pre()
+            ref()
+
+        for i in range(18):
+            for _ in range(29):
+                act(bank=decoys[0].bank, row=decoys[0].row - 1)
+                pre()
+                act(bank=decoys[0].bank, row=decoys[0].row + 1)
+                pre()
+            ref()
+
+    # After 5 x 32 = 160 REFs we shift by one.
+    for _ in range(29):
+        act(bank=decoys[0].bank, row=decoys[0].row - 1)
+        pre()
+        act(bank=decoys[0].bank, row=decoys[0].row + 1)
+        pre()
+    ref()
+
+for i in range(16):
+    for _ in range(29):
+        act(bank=decoys[0].bank, row=decoys[0].row - 1)
+        pre()
+        act(bank=decoys[0].bank, row=decoys[0].row + 1)
+        pre()
+    ref()
+
+for k in range(8):
+
+    for kk in range(5):
+
+        for i in range(27):
+            for _ in range(29):
+                act(bank=decoys[0].bank, row=decoys[0].row - 1)
+                pre()
+                act(bank=decoys[0].bank, row=decoys[0].row + 1)
+                pre()
+            ref()
+
+        for i in range(3):
+            for _ in range({hammer_count}):
+                for i in range(2):
+                    act(bank=addresses[i].bank, row=addresses[i].row)
+                    pre()
+
+            for _ in range({decoy_hammer_count}):
+                for i in range(2):
+                    act(bank=decoys[i].bank, row=decoys[i].row)
+                    pre()
+            ref()
+
+        for _ in range(2):
+            for _ in range(29):
+                act(bank=decoys[0].bank, row=decoys[0].row - 1)
+                pre()
+                act(bank=decoys[0].bank, row=decoys[0].row + 1)
+                pre()
+            ref()
+
+    for _ in range(29):
+        act(bank=decoys[0].bank, row=decoys[0].row - 1)
+        pre()
+        act(bank=decoys[0].bank, row=decoys[0].row + 1)
+        pre()
+    ref()
+
+for _ in range(16):
+    for _ in range(29):
+        act(bank=decoys[0].bank, row=decoys[0].row - 1)
+        pre()
+        act(bank=decoys[0].bank, row=decoys[0].row + 1)
+        pre()
+    ref()

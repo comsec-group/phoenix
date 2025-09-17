@@ -1,0 +1,23 @@
+for _ in range(16):
+    for i in range(4):
+        for _ in range(29):
+            act(bank=decoys[0].bank, row=decoys[0].row - 1)
+            pre()
+            act(bank=decoys[0].bank, row=decoys[0].row + 1)
+            pre()
+        ref()
+
+for _ in range(16):
+    for _ in range(2):
+        for i in range(59):
+            act(bank=addresses[i].bank, row=addresses[i].row + 1)
+            pre()
+        ref()
+
+    for _ in range(2):
+        for _ in range(29):
+            act(bank=decoys[0].bank, row=decoys[0].row - 1)
+            pre()
+            act(bank=decoys[0].bank, row=decoys[0].row + 1)
+            pre()
+        ref()

@@ -1,0 +1,37 @@
+for _ in range({pattern_repetitions}):
+
+    for _ in range(16):
+        for i in range(4):
+            for _ in range(29):
+                act(bank=decoys[1].bank, row=decoys[1].row - 1)
+                pre()
+                act(bank=decoys[1].bank, row=decoys[1].row + 1)
+                pre()
+            ref()
+
+    for _ in range(16):
+        for _ in range(2):
+
+            for _ in range({hammer_count}):
+                for i in range(2):
+                    act(bank=addresses[i].bank, row=addresses[i].row)
+                    pre()
+
+            for _ in range({hammer_count_remainder}):
+                act(bank=addresses[0].bank, row=addresses[0].row)
+                pre()
+
+            for _ in range({decoy_hammer_count}):
+                act(bank=decoys[0].bank, row=decoys[0].row)
+                pre()
+
+            ref()
+
+        for _ in range(2):
+          for _ in range(29):
+              act(bank=decoys[1].bank, row=decoys[1].row - 1)
+              pre()
+              act(bank=decoys[1].bank, row=decoys[1].row + 1)
+              pre()
+          ref()
+

@@ -1,0 +1,26 @@
+name: check-format
+
+on: [push, pull_request]
+
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout rowhammer-tester
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          submodules: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Check format
+        run: |
+          make lint-check

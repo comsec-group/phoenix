@@ -1,0 +1,3 @@
+for _ in range({trefw_candidate}):
+    ref()
+    nop(cycles=779)

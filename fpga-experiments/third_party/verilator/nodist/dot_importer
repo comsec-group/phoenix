@@ -1,0 +1,99 @@
+#!/usr/bin/env python3
+# pylint: disable=C0103,C0114,C0115,C0116,C0209,C0301
+######################################################################
+
+import argparse
+import re
+
+######################################################################
+
+Header = []
+Vertexes = []
+Edges = []
+
+#######################################################################
+
+
+def dotread(filename):
+    with open(filename, "r", encoding="utf8") as fh:
+        header = True
+        vnum = 0
+
+        vertex_re = re.compile(r'^\t([a-zA-Z0-9_]+)\t(.*)$')
+        edge_re = re.compile(r'^\t([a-zA-Z0-9_]+)\s+->\s+([a-zA-Z0-9_]+)\s*(.*)$')
+
+        for line in fh:
+            vertex_match = re.search(vertex_re, line)
+            edge_match = re.search(edge_re, line)
+            if vertex_match:
+                if vertex_match.group(1) != 'nTITLE':
+                    header = False
+                    Vertexes.append({'num': vnum, 'line': line, 'name': vertex_match.group(1)})
+                    vnum += 1
+            elif edge_match:
+                fromv = edge_match.group(1)
+                tov = edge_match.group(2)
+                w = re.match(r'weight=(\d+)', line)
+                weight = w.group(1) if w else 1
+                w = re.match(r'style=(\S+)', line)
+                cutable = w.group(1) if w else None
+                edge = {
+                    'num': vnum,
+                    'line': line,
+                    'weight': weight,
+                    'cutable': cutable,
+                    'from': fromv,
+                    'to': tov
+                }
+                vnum += 1
+                Edges.append(edge)
+            elif header:
+                Header.append(line)
+                print("IGNORE: " + line)
+
+
+#######################################################################
+
+
+def cwrite(filename):
+    with open(filename, "w", encoding="utf8") as fh:
+        fh.write("void V3GraphTestImport::dotImport() {\n")
+        fh.write("    auto* gp = &m_graph;\n")
+        for ver in sorted(Vertexes, key=lambda ver: ver['num']):
+            fh.write("    auto* %s = new V3GraphTestVertex{gp, \"%s\"};  if (%s) {}\n" %
+                     (ver['name'], ver['name'], ver['name']))
+        fh.write("\n")
+        for edge in Edges:
+            fh.write(
+                "    new V3GraphEdge{gp, %s, %s, %s, %s};\n" %
+                (edge['from'], edge['to'], edge['weight'], "true" if edge['cutable'] else "false"))
+        fh.write("}\n")
+
+
+######################################################################
+# main
+
+parser = argparse.ArgumentParser(
+    allow_abbrev=False,
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    description="""dot_importer takes a graphvis .dot file and converts into .cpp file.
+This x.cpp file is then manually included in V3GraphTest.cpp to verify
+various xsub-algorithms.""",
+    epilog="""Copyright 2005-2024 by Wilson Snyder. This program is free software; you
+can redistribute it and/or modify it under the terms of either the GNU
+Lesser General Public License Version 3 or the Perl Artistic License
+Version 2.0.
+
+SPDX-License-Identifier: LGPL-3.0-only OR Artistic-2.0""")
+
+parser.add_argument('--debug', action='store_const', const=9, help='enable debug')
+parser.add_argument('filename', help='input .dot filename to process')
+
+Args = parser.parse_args()
+dotread(Args.filename)
+cwrite("graph_export.cpp")
+
+######################################################################
+# Local Variables:
+# compile-command: "./dot_importer ../test_regress/obj_vlt/t_EXAMPLE/*orderg_o*.dot && cat graph_export.cpp"
+# End:

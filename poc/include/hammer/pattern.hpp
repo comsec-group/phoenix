@@ -1,0 +1,120 @@
+#pragma once
+#include "dram_address.hpp"
+
+#include <iomanip>
+#include <ostream>
+#include <sstream>
+#include <vector>
+
+
+typedef std::vector<dram_address> trefi_burst_t;
+typedef std::vector<trefi_burst_t> hammer_pattern_t;
+
+using bank_pattern_builder_t = hammer_pattern_t (*)(int subch,
+                                                    int rank,
+                                                    int bank_group,
+                                                    int bank,
+                                                    int row_base_offset,
+                                                    int reads_per_trefi,
+                                                    int column_stride,
+                                                    int offset_increment);
+
+hammer_pattern_t assemble_skh_mod128_pattern(int subchannel,
+                                             int rank,
+                                             int bank_group,
+                                             int bank,
+                                             int row_base_offset,
+                                             int reads_per_trefi,
+                                             int column_stride,
+                                             int offset_increment);
+
+hammer_pattern_t assemble_skh_mod2608_pattern(int subchannel,
+                                              int rank,
+                                              int bank_group,
+                                              int bank,
+                                              int row_base_offset,
+                                              int reads_per_trefi,
+                                              int column_stride,
+                                              int offset_increment);
+
+hammer_pattern_t assemble_multi_bank_pattern(bank_pattern_builder_t builder,
+                                             const std::vector<int>& subchannels,
+                                             const std::vector<int>& ranks,
+                                             const std::vector<int>& bank_groups,
+                                             const std::vector<int>& banks,
+                                             int row_base_offset,
+                                             int reads_per_trefi,
+                                             int column_stride,
+                                             std::size_t burst_rotation,
+                                             int offset_increment);
+
+std::vector<dram_address> pattern_aggressors(const hammer_pattern_t& pat);
+std::vector<dram_address> pattern_victims(const hammer_pattern_t& pat);
+
+/**
+ * Interleave two hammer patterns burst-by-burst.
+ *
+ *  • Patterns must have the same number of bursts.
+ *  • Bursts may be of different lengths.
+ *  • @p stride_a ≥ 1 specifies how many A-elements to emit
+ *    before inserting exactly **one** B-element.
+ *
+ * Example with stride_a = 2:
+ *     A A B  A A B  A A B …
+ */
+hammer_pattern_t
+merge_patterns(const hammer_pattern_t& a, const hammer_pattern_t& b, std::size_t stride_a);
+
+inline hammer_pattern_t rotate_pattern_right(const hammer_pattern_t& src, std::size_t shift) {
+    if(src.empty()) {
+        return src;
+    }
+
+    shift %= src.size();
+    if(shift == 0) {
+        return src;
+    }
+
+    hammer_pattern_t dst = src;
+    std::rotate(dst.begin(), dst.end() - shift, dst.end());
+    return dst;
+}
+
+
+/*──────────── burst → std::string  (one address per line) ─────────*/
+inline std::string to_string(const trefi_burst_t& burst) {
+    std::ostringstream oss;
+    oss << "[\n"; // open bracket + line-break
+    for(std::size_t i = 0; i < burst.size(); ++i) {
+        if(i) {
+            oss << '\n'; // newline between addresses
+        }
+        oss << "  " << burst[i].to_string(); // 2-space indent for readability
+    }
+    oss << "\n]"; // closing bracket on its own line
+    return oss.str();
+}
+
+
+/*──────── pattern → std::string  (one burst per line) ────────*/
+inline std::string to_string(const hammer_pattern_t& pattern) {
+    std::ostringstream oss;
+
+    for(std::size_t b = 0; b < pattern.size(); ++b) {
+        oss << "Burst " << b << ":\n" << to_string(pattern[b]);
+
+        if(b + 1 != pattern.size()) {
+            oss << "\n\n";
+        }
+    }
+    return oss.str();
+}
+
+/*────────────  stream operators  ─────────────────────────*/
+inline std::ostream& operator<<(std::ostream& os, const trefi_burst_t& burst) {
+    return os << to_string(burst);
+}
+
+inline std::ostream& operator<<(std::ostream& os, const hammer_pattern_t& pattern) {
+    return os << to_string(pattern);
+}

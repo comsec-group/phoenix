@@ -1,0 +1,13 @@
+name: retention_config
+dram_mapping: direct # depends on the row mapping of your DIMM
+
+bank: 0
+start: 1000
+end: 2000
+
+flush_rows: [780, 800]
+
+pattern_32bit: 0xFFFFFFFF
+wait_lower_ms: 16000
+wait_upper_ms: 23000
+iterations: 100

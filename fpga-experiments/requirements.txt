@@ -1,0 +1,45 @@
+# Litex
+-e .
+-e third_party/migen
+-e third_party/litex
+-e third_party/litedram
+-e third_party/liteeth
+-e third_party/liteiclink
+-e third_party/litescope
+-e third_party/litepcie
+-e third_party/litex-boards
+# vexriscv cpu
+-e third_party/pythondata-cpu-vexriscv_smp
+git+https://github.com/litex-hub/pythondata-cpu-vexriscv.git@a36d99eeea984c261e16b744fc1d287c81099777
+# litex software data
+git+https://github.com/litex-hub/pythondata-software-picolibc.git
+git+https://github.com/litex-hub/pythondata-software-compiler_rt.git
+
+# PyPi packages
+black == 24.10.0
+flake8 == 7.0.0
+gitpython == 3.1.36
+isort == 5.13.2
+matplotlib == 3.7.3
+meson == 0.63.0
+ninja == 1.11.1
+pandas == 2.2.3
+parameterized == 0.9.0
+pexpect == 4.8.0
+pyqt5 == 5.15.11
+pyvcd == 0.4.0
+ruff == 0.8.0
+wheel == 0.41.2
+yapf == 0.32.0
+
+bitarray
+colorlog
+more-itertools
+numpy == 1.24.4
+pre-commit
+pytest
+pyparsing
+seaborn
+tqdm
+
+pyyaml

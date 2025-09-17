@@ -1,0 +1,122 @@
+// Compile: `protoc payload_ddr4.proto --python_out=.`
+
+syntax = "proto2";
+
+package payload_ddr4.proto;
+
+// Represents DRAM timing parameters as integer multiples of the system clock
+// (i.e., tick).
+message Timing {
+  // Picoseconds.
+  optional uint32 tick_ps = 1;
+
+  // Ticks.
+  optional uint32 ras = 2;
+  optional uint32 rp = 3;
+  optional uint32 rfc = 4;
+
+  optional uint32 rcd = 5;
+  optional uint32 ccd_l = 6;
+  optional uint32 ccd_s = 7;
+  optional uint32 rtp = 8;
+
+  optional uint32 rrd_l = 9;
+  optional uint32 rrd_s = 10;
+  optional uint32 faw = 11;
+}
+
+// Encodes the instruction type.
+enum Opcode {
+  // Memory instructions. Refer to "DDR4 SDRAM". JESD79-4B. July 2017.
+  RD = 2;   // ACT: 0, RAS: 0, CAS: 1, WE: 0
+  // Hard-coded to 8 despite how its lowest bits (RAS, CAS, WE) are repurposed as
+  // higher (but not the highest) bits of the address (ADDR16, ADDR15, ADDR14).
+  ACT = 8;  // ACT: 1, RAS: 0, CAS: 0, WE: 0
+  PRE = 5;  // ACT: 0, RAS: 1, CAS: 0, WE: 1
+  REF = 6;  // ACT: 0, RAS: 1, CAS: 1, WE: 0
+
+  // Non-memory instructions.
+  NOP = 0;
+  JMP = 7;
+
+  // Unused.
+  MAX = 9;
+}
+
+// Stores a single instruction. Implemented as a sum-type. 40 bits wide, but
+// subject to future expansion. Will maintain backwards compatibility.
+message Instr {
+  // Memory instruction. Maps to a DRAM command.
+  message MemInstr {
+    enum Bits {
+      option allow_alias = true;
+      OPCODE = 4;
+      TIMESLICE = 9;
+      RANK = 2;
+      STACK = 3;
+      BANK_GROUP = 2;
+      BANK = 2;
+      ADDR = 18;
+    }
+
+    // Must be one of RD, ACT, PRE, REF.
+    optional Opcode opcode = 1;
+    // Number of ticks that separates this command from the one following it.
+    // Minimum is one when they are back-to-back.
+    optional uint32 timeslice = 2;
+    // Must be set to 0. Multi-ranks are not yet supported.
+    optional uint32 rank = 3;
+    // Must be set to 0. Die-stacks are not yet supported.
+    optional uint32 stack = 4;
+    optional uint32 bank_group = 5;
+    optional uint32 bank = 6;
+    optional uint32 addr = 7;
+  }
+
+  // No-op instruction. Simply consumes time.
+  message NopInstr {
+    enum Bits {
+      OPCODE = 4;
+      TIMESLICE = 29;
+      UNUSED = 7;
+    }
+
+    // Must be NOP.
+    optional Opcode opcode = 1 [default = NOP];
+    // Number of ticks that separates this command from the one
+    // following it. Minimum is one when they are back-to-back.
+    optional uint32 timeslice = 2;
+  }
+
+  // Jump instruction. Emulates a do-while loop. Nesting is prohibited.
+  // Timeslice of one is implied.
+  message JmpInstr {
+    enum Bits {
+      OPCODE = 4;
+      OFFSET = 9;
+      COUNT = 20;
+      UNUSED = 7;
+    }
+
+    // Must be JMP.
+    optional Opcode opcode = 1 [default = JMP];
+    // Number of instructions to jump backward. Minimum is one when the
+    // target comes directly before this one.
+    optional uint32 offset = 2;
+    // Number of loop iterations. Minimum is one because by the time the
+    // jump instruction is encountered, the loop has already executed once.
+    optional uint32 count = 3;
+  }
+
+  oneof instr {
+    MemInstr mem = 1;
+    NopInstr nop = 2;
+    JmpInstr jmp = 3;
+  }
+}
+
+// Represents a time-stamped memory access pattern.
+message Payload {
+    optional Timing timing = 1;
+    repeated Instr instr = 2;
+}

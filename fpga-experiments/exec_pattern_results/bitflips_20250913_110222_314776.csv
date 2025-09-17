@@ -1,0 +1,16 @@
+iteration,modulo,bank,row,pattern,bit_flip_bit,bit_flip_byte,code_path,acts_per_trefi,refs_executed,payload_exec_cnt
+0,18,0,1000,0x00,15291,1911,exec_pattern_results/payload_50acts_320reps.pyram,50,40960,1
+0,18,0,1000,0x00,15292,1911,exec_pattern_results/payload_50acts_320reps.pyram,50,40960,1
+0,18,0,1000,0x00,48063,6007,exec_pattern_results/payload_50acts_320reps.pyram,50,40960,1
+1,18,0,1000,0x00,17025,2128,exec_pattern_results/payload_50acts_320reps.pyram,50,40960,1
+1,18,0,1000,0x00,17028,2128,exec_pattern_results/payload_50acts_320reps.pyram,50,40960,1
+1,18,0,1000,0x00,22407,2800,exec_pattern_results/payload_50acts_320reps.pyram,50,40960,1
+1,18,0,1000,0x00,24513,3064,exec_pattern_results/payload_50acts_320reps.pyram,50,40960,1
+1,18,0,1000,0x00,54784,6848,exec_pattern_results/payload_50acts_320reps.pyram,50,40960,1
+1,18,0,1000,0x00,56836,7104,exec_pattern_results/payload_50acts_320reps.pyram,50,40960,1
+0,22,0,1000,0x00,17025,2128,exec_pattern_results/payload_50acts_320reps.pyram,50,40960,1
+0,22,0,1000,0x00,17028,2128,exec_pattern_results/payload_50acts_320reps.pyram,50,40960,1
+0,22,0,1000,0x00,22407,2800,exec_pattern_results/payload_50acts_320reps.pyram,50,40960,1
+0,22,0,1000,0x00,24513,3064,exec_pattern_results/payload_50acts_320reps.pyram,50,40960,1
+0,22,0,1000,0x00,54784,6848,exec_pattern_results/payload_50acts_320reps.pyram,50,40960,1
+0,22,0,1000,0x00,56836,7104,exec_pattern_results/payload_50acts_320reps.pyram,50,40960,1

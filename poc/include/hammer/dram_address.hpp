@@ -1,0 +1,66 @@
+#pragma once
+
+#include <string>
+
+#include "allocation.hpp"
+
+
+class dram_address {
+    public:
+    static void initialize(allocation alloc, int dimm_size_gib, int dimm_ranks);
+    static allocation& alloc();
+
+    [[nodiscard]] static dram_address from_virt(const volatile char* virt);
+
+    // ❶  default-constructible now ────────────────────────────
+    dram_address() noexcept = default; // all six data members already
+
+    dram_address(size_t subchannel, size_t rank, size_t bank_group, size_t bank, size_t row, size_t column)
+    : m_subchannel(subchannel), m_rank(rank), m_bank_group(bank_group),
+      m_bank(bank), m_row(row), m_column(column) {
+    }
+
+    [[nodiscard]] volatile char* to_virt() const;
+
+    [[nodiscard]] size_t subchannel() const;
+    [[nodiscard]] size_t rank() const;
+    [[nodiscard]] size_t bank_group() const;
+    [[nodiscard]] size_t bank() const;
+    [[nodiscard]] size_t row() const;
+    [[nodiscard]] size_t column() const;
+
+    void add_inplace(size_t subchannels, size_t ranks, size_t bank_groups, size_t banks, size_t rows, size_t columns);
+
+    dram_address
+    add(size_t subchannels, size_t ranks, size_t bank_groups, size_t banks, size_t rows, size_t columns);
+
+    [[nodiscard]] std::vector<volatile char*> get_vaddrs_whole_row() const;
+    std::vector<dram_address> get_whole_row() const;
+
+    [[nodiscard]] std::string to_string() const;
+
+    size_t m_subchannel{};
+    size_t m_rank{};
+    size_t m_bank_group{};
+    size_t m_bank{};
+    size_t m_row{};
+    size_t m_column{};
+
+    bool operator==(const dram_address& o) const noexcept {
+        return m_subchannel == o.m_subchannel && m_rank == o.m_rank &&
+            m_bank_group == o.m_bank_group && m_bank == o.m_bank &&
+            m_row == o.m_row && m_column == o.m_column;
+    }
+};
+
+inline std::vector<volatile uint64_t*>
+convert_addresses_to_virtual(const std::vector<dram_address>& dram_addresses) {
+    std::vector<volatile uint64_t*> virtual_addresses;
+    virtual_addresses.reserve(dram_addresses.size());
+
+    for(const auto& da : dram_addresses) {
+        virtual_addresses.push_back(reinterpret_cast<volatile uint64_t*>(da.to_virt()));
+    }
+
+    return virtual_addresses;
+}

@@ -1,0 +1,322 @@
+[
+    {
+        "bank": 0,
+        "row": 1003,
+        "row_hex": "0x3eb"
+    },
+    {
+        "bank": 0,
+        "row": 1014,
+        "row_hex": "0x3f6"
+    },
+    {
+        "bank": 0,
+        "row": 1029,
+        "row_hex": "0x405"
+    },
+    {
+        "bank": 0,
+        "row": 1040,
+        "row_hex": "0x410"
+    },
+    {
+        "bank": 0,
+        "row": 1061,
+        "row_hex": "0x425"
+    },
+    {
+        "bank": 0,
+        "row": 1074,
+        "row_hex": "0x432"
+    },
+    {
+        "bank": 0,
+        "row": 1086,
+        "row_hex": "0x43e"
+    },
+    {
+        "bank": 0,
+        "row": 1096,
+        "row_hex": "0x448"
+    },
+    {
+        "bank": 0,
+        "row": 1107,
+        "row_hex": "0x453"
+    },
+    {
+        "bank": 0,
+        "row": 1122,
+        "row_hex": "0x462"
+    },
+    {
+        "bank": 0,
+        "row": 1141,
+        "row_hex": "0x475"
+    },
+    {
+        "bank": 0,
+        "row": 1151,
+        "row_hex": "0x47f"
+    },
+    {
+        "bank": 0,
+        "row": 1162,
+        "row_hex": "0x48a"
+    },
+    {
+        "bank": 0,
+        "row": 1172,
+        "row_hex": "0x494"
+    },
+    {
+        "bank": 0,
+        "row": 1182,
+        "row_hex": "0x49e"
+    },
+    {
+        "bank": 0,
+        "row": 1195,
+        "row_hex": "0x4ab"
+    },
+    {
+        "bank": 0,
+        "row": 1208,
+        "row_hex": "0x4b8"
+    },
+    {
+        "bank": 0,
+        "row": 1225,
+        "row_hex": "0x4c9"
+    },
+    {
+        "bank": 0,
+        "row": 1235,
+        "row_hex": "0x4d3"
+    },
+    {
+        "bank": 0,
+        "row": 1249,
+        "row_hex": "0x4e1"
+    },
+    {
+        "bank": 0,
+        "row": 1261,
+        "row_hex": "0x4ed"
+    },
+    {
+        "bank": 0,
+        "row": 1274,
+        "row_hex": "0x4fa"
+    },
+    {
+        "bank": 0,
+        "row": 1285,
+        "row_hex": "0x505"
+    },
+    {
+        "bank": 0,
+        "row": 1297,
+        "row_hex": "0x511"
+    },
+    {
+        "bank": 0,
+        "row": 1307,
+        "row_hex": "0x51b"
+    },
+    {
+        "bank": 0,
+        "row": 1326,
+        "row_hex": "0x52e"
+    },
+    {
+        "bank": 0,
+        "row": 1340,
+        "row_hex": "0x53c"
+    },
+    {
+        "bank": 0,
+        "row": 1350,
+        "row_hex": "0x546"
+    },
+    {
+        "bank": 0,
+        "row": 1365,
+        "row_hex": "0x555"
+    },
+    {
+        "bank": 0,
+        "row": 1381,
+        "row_hex": "0x565"
+    },
+    {
+        "bank": 0,
+        "row": 1395,
+        "row_hex": "0x573"
+    },
+    {
+        "bank": 0,
+        "row": 1409,
+        "row_hex": "0x581"
+    },
+    {
+        "bank": 0,
+        "row": 1422,
+        "row_hex": "0x58e"
+    },
+    {
+        "bank": 0,
+        "row": 1432,
+        "row_hex": "0x598"
+    },
+    {
+        "bank": 0,
+        "row": 1442,
+        "row_hex": "0x5a2"
+    },
+    {
+        "bank": 0,
+        "row": 1459,
+        "row_hex": "0x5b3"
+    },
+    {
+        "bank": 0,
+        "row": 1469,
+        "row_hex": "0x5bd"
+    },
+    {
+        "bank": 0,
+        "row": 1485,
+        "row_hex": "0x5cd"
+    },
+    {
+        "bank": 0,
+        "row": 1503,
+        "row_hex": "0x5df"
+    },
+    {
+        "bank": 0,
+        "row": 1516,
+        "row_hex": "0x5ec"
+    },
+    {
+        "bank": 0,
+        "row": 1526,
+        "row_hex": "0x5f6"
+    },
+    {
+        "bank": 0,
+        "row": 1539,
+        "row_hex": "0x603"
+    },
+    {
+        "bank": 0,
+        "row": 1559,
+        "row_hex": "0x617"
+    },
+    {
+        "bank": 0,
+        "row": 1569,
+        "row_hex": "0x621"
+    },
+    {
+        "bank": 0,
+        "row": 1584,
+        "row_hex": "0x630"
+    },
+    {
+        "bank": 0,
+        "row": 1594,
+        "row_hex": "0x63a"
+    },
+    {
+        "bank": 0,
+        "row": 1609,
+        "row_hex": "0x649"
+    },
+    {
+        "bank": 0,
+        "row": 1619,
+        "row_hex": "0x653"
+    },
+    {
+        "bank": 0,
+        "row": 1630,
+        "row_hex": "0x65e"
+    },
+    {
+        "bank": 0,
+        "row": 1640,
+        "row_hex": "0x668"
+    },
+    {
+        "bank": 0,
+        "row": 1651,
+        "row_hex": "0x673"
+    },
+    {
+        "bank": 0,
+        "row": 1662,
+        "row_hex": "0x67e"
+    },
+    {
+        "bank": 0,
+        "row": 1676,
+        "row_hex": "0x68c"
+    },
+    {
+        "bank": 0,
+        "row": 1689,
+        "row_hex": "0x699"
+    },
+    {
+        "bank": 0,
+        "row": 1701,
+        "row_hex": "0x6a5"
+    },
+    {
+        "bank": 0,
+        "row": 1737,
+        "row_hex": "0x6c9"
+    },
+    {
+        "bank": 0,
+        "row": 1748,
+        "row_hex": "0x6d4"
+    },
+    {
+        "bank": 0,
+        "row": 1758,
+        "row_hex": "0x6de"
+    },
+    {
+        "bank": 0,
+        "row": 1776,
+        "row_hex": "0x6f0"
+    },
+    {
+        "bank": 0,
+        "row": 1789,
+        "row_hex": "0x6fd"
+    },
+    {
+        "bank": 0,
+        "row": 1800,
+        "row_hex": "0x708"
+    },
+    {
+        "bank": 0,
+        "row": 1814,
+        "row_hex": "0x716"
+    },
+    {
+        "bank": 0,
+        "row": 1824,
+        "row_hex": "0x720"
+    },
+    {
+        "bank": 0,
+        "row": 1839,
+        "row_hex": "0x72f"
+    }
+]

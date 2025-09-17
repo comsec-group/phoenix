@@ -1,0 +1,37 @@
+[submodule "litedram"]
+	path = third_party/litedram
+	url = https://github.com/antmicro/litedram.git
+[submodule "liteeth"]
+	path = third_party/liteeth
+	url = https://github.com/antmicro/liteeth.git
+[submodule "liteiclink"]
+	path = third_party/liteiclink
+	url = https://github.com/enjoy-digital/liteiclink.git
+[submodule "litescope"]
+	path = third_party/litescope
+	url = https://github.com/enjoy-digital/litescope.git
+[submodule "litex"]
+	path = third_party/litex
+	url = https://github.com/antmicro/litex.git
+[submodule "migen"]
+	path = third_party/migen
+	url = https://github.com/m-labs/migen
+[submodule "verilator"]
+	path = third_party/verilator
+	url = https://github.com/verilator/verilator.git
+	ignore = dirty
+[submodule "third_party/litex-boards"]
+	path = third_party/litex-boards
+	url = https://github.com/antmicro/litex-boards.git
+[submodule "third_party/openFPGALoader"]
+	path = third_party/openFPGALoader
+	url = https://github.com/antmicro/openFPGALoader.git
+[submodule "third_party/openocd"]
+	path = third_party/openocd
+	url = https://github.com/antmicro/openocd.git
+[submodule "third_party/pythondata-cpu-vexriscv_smp"]
+	path = third_party/pythondata-cpu-vexriscv_smp
+	url = https://github.com/litex-hub/pythondata-cpu-vexriscv_smp
+[submodule "third_party/litepcie"]
+	path = third_party/litepcie
+	url = https://github.com/enjoy-digital/litepcie

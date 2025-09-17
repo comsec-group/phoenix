@@ -1,0 +1,30 @@
+[*]
+[*] GTKWave Analyzer v3.3.58 (w)1999-2014 BSI
+[*] Sun Jul  9 22:38:21 2017
+[*]
+[dumpfile] "/home/spinalvm/Spinal/VexRiscv/src/test/cpp/briey/Briey.vcd"
+[dumpfile_mtime] "Sun Jul  9 22:38:03 2017"
+[dumpfile_size] 1880556694
+[savefile] "/home/spinalvm/Spinal/VexRiscv/src/test/cpp/briey/wip.gtkw"
+[timestart] 225385490000
+[size] 1776 953
+[pos] -775 -1
+*-24.000000 225374620001 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.Briey.
+[treeopen] TOP.Briey.axi_vgaCtrl.
+[sst_width] 358
+[signals_width] 150
+[sst_expanded] 1
+[sst_vpaned_height] 279
+@28
+TOP.Briey.axi_vgaCtrl.vga_ctrl.io_frameStart
+TOP.Briey.axi_vgaCtrl.vga_ctrl.io_pixels_ready
+TOP.Briey.axi_vgaCtrl.vga_ctrl.io_pixels_valid
+TOP.Briey.axi_vgaCtrl.vga_ctrl.io_softReset
+TOP.Briey.axi_vgaCtrl.vga_ctrl.io_vgaClk
+TOP.Briey.axi_vgaCtrl.vga_ctrl.io_vga_colorEn
+@29
+TOP.Briey.axi_vgaCtrl.vga_run
+[pattern_trace] 1
+[pattern_trace] 0
