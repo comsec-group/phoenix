@@ -3,6 +3,9 @@
 
 #include <stdexcept>
 #include <vector>
+#include <algorithm>
+#include <array>
+#include <tuple>
 
 inline std::vector<dram_address> address_unique(std::vector<dram_address> flat) {
     std::vector<dram_address> unique;
