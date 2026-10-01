@@ -303,7 +303,8 @@ hammer_pattern_t assemble_multi_bank_pattern(bank_pattern_builder_t builder,
                         builder(sc, rk, bg, bk, row_base_offset, reads_per_trefi,
                                 column_stride, offset_increment);
 
-                    pat = rotate_pattern_right(pat, burst_rotation);
+                    pat = rotate_pattern_right(
+                        pat, static_cast<std::size_t>(stride) * burst_rotation);
 
                     if(first) {
                         result = std::move(pat);
